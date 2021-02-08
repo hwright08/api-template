@@ -1,13 +1,15 @@
 import { expect, server, BASE_URL } from './setup';
 
-describe('Index page test', () => {
-  it('gets base url', done => {
+const url = `${BASE_URL}/messages`
+
+describe('Messages', () => {
+  it('gets all messages', done => {
     server
-      .get(`${BASE_URL}/`)
+      .get(url)
       .expect(200)
       .end((err, res) => {
         expect(res.status).to.equal(200);
-        expect(res.body.success).to.equal(true);
+        expect(res.body).to.have.length(2);
         done();
       });
   });
