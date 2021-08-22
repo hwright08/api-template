@@ -1,4 +1,8 @@
+const source = require('./source');
+
 module.exports = {
+  testFunc: source.testFunc,
+
   async getAllUsers(id = undefined) {
     const allUsers = [
       {

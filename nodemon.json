@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "package.json",
+    "nodemon.json",
+    ".eslintrc.js",
+    ".env",
+    "src/"
+  ],
+  "verbose": true,
+  "ignore": [
+    "*.spec.js"
+  ]
+}

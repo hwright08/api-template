@@ -8,6 +8,11 @@ router.get('/', async (req, res) => {
   res.json(users);
 });
 
+router.get('/test', async (req, res) => {
+  const t = await service.testFunc();
+  res.json(t);
+});
+
 router.get('/:id', async (req, res) => {
   const user = await service.getAllUsers(req.params.id);
   res.json(user);
