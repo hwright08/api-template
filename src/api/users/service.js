@@ -2,13 +2,13 @@ module.exports = {
   async getAllUsers(id = undefined) {
     const allUsers = [
       {
-        name: 'Haley Wright',
+        name: 'First Last',
         user_id: 1
       }, {
-        name: 'James Wright',
+        name: 'Second Last',
         user_id: 2
       }, {
-        name: 'Sassy Wright',
+        name: 'Third Last',
         user_id: 3
       },
     ];
