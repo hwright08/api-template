@@ -27,14 +27,13 @@ COMMENT ON COLUMN lesson_type.select_key IS 'A unique value to be used in place 
 COMMENT ON COLUMN lesson_type.title IS 'The readable text';
 
 CREATE TABLE cfi.lesson (
-  id SERIAL PRIMARY KEY,
+  lesson_id SERIAL PRIMARY KEY,
   rating_id INTEGER NOT NULL,
   lesson_type_id INTEGER NOT NULL,
   stage_number INTEGER NOT NULL,
   lesson_number INTEGER,
   tco_page_number INTEGER,
   title TEXT,
-  lesson_order INTEGER,
   CONSTRAINT lesson_rating_id_fk FOREIGN KEY (rating_id) REFERENCES cfi.rating (rating_id),
   CONSTRAINT lesson__lesson_type_id_fk FOREIGN KEY (lesson_type_id) REFERENCES cfi.lesson_type (lesson_type_id)
 );
@@ -44,7 +43,6 @@ COMMENT ON COLUMN lesson.stage_number IS 'The number for the stage';
 COMMENT ON COLUMN lesson.lesson_number IS 'The number for the associated lesson';
 COMMENT ON COLUMN lesson.tco_page_number IS 'The page number in the TCO that has this lesson';
 COMMENT ON COLUMN lesson.title IS 'Descriptive text for the particular lesson. Make sure to have a title when the lesson is a stage check or other exam.';
-COMMENT ON COLUMN lesson.order IS 'The order to display the lessons';
 
 CREATE TABLE cfi.student (
   student_id      SERIAL PRIMARY KEY,
@@ -57,8 +55,8 @@ CREATE TABLE cfi.student (
   mod_by_id       INTEGER NOT NULL,
   mod_ts          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT student__instructor_id_fk FOREIGN KEY (instructor_id) REFERENCES cfi.user (user_id),
-  CONSTRAINT student_add_by_id_fk FOREIGN KEY (add_by_id) REFERENCES cfi.user (user_id),
-  CONSTRAINT student_mod_by_id_fk FOREIGN KEY (mod_by_id) REFERENCES cfi.user (user_id)
+  CONSTRAINT student__add_by_id_fk FOREIGN KEY (add_by_id) REFERENCES cfi.user (user_id),
+  CONSTRAINT student__mod_by_id_fk FOREIGN KEY (mod_by_id) REFERENCES cfi.user (user_id)
 );
 
 CREATE TABLE cfi.student_rating_map (
@@ -71,8 +69,10 @@ CREATE TABLE cfi.student_rating_map (
   add_ts          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   mod_by_id       INTEGER NOT NULL,
   mod_ts          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT student_rating_map_add_by_id_fk FOREIGN KEY (add_by_id) REFERENCES cfi.user (user_id),
-  CONSTRAINT student_rating_map_mod_by_id_fk FOREIGN KEY (mod_by_id) REFERENCES cfi.user (user_id)
+  CONSTRAINT student_rating_map__student_id FOREIGN KEY (student_id) REFERENCES cfi.student (student_id),
+  CONSTRAINT student_rating_map__rating_id FOREIGN KEY (rating_id) REFERENCES cfi.rating (rating_id),
+  CONSTRAINT student_rating_map__add_by_id_fk FOREIGN KEY (add_by_id) REFERENCES cfi.user (user_id),
+  CONSTRAINT student_rating_map__mod_by_id_fk FOREIGN KEY (mod_by_id) REFERENCES cfi.user (user_id)
 );
 
 CREATE TABLE cfi.student_lesson_map (
@@ -80,13 +80,14 @@ CREATE TABLE cfi.student_lesson_map (
   student_id  INTEGER NOT NULL,
   lesson_id   INTEGER NOT NULL,
   notes       TEXT,
-  in_progress BOOLEAN DEFAULT FALSE,
   is_complete BOOLEAN DEFAULT FALSE,
   scheduled_date DATE,
   add_by_id       INTEGER NOT NULL,
   add_ts          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   mod_by_id       INTEGER NOT NULL,
   mod_ts          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT student_lesson_map_add_by_id_fk FOREIGN KEY (add_by_id) REFERENCES cfi.user (user_id),
-  CONSTRAINT student_lesson_map_mod_by_id_fk FOREIGN KEY (mod_by_id) REFERENCES cfi.user (user_id)
+  CONSTRAINT student_lesson_map__lesson_id_fk FOREIGN KEY (lesson_id) REFERENCES cfi.lesson (lesson_id),
+  CONSTRAINT student_lesson_map__student_id_fk FOREIGN KEY (student_id) REFERENCES cfi.student (student_id),
+  CONSTRAINT student_lesson_map__add_by_id_fk FOREIGN KEY (add_by_id) REFERENCES cfi.user (user_id),
+  CONSTRAINT student_lesson_map__mod_by_id_fk FOREIGN KEY (mod_by_id) REFERENCES cfi.user (user_id)
 );

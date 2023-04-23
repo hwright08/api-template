@@ -1,6 +1,7 @@
 const pgp = require('pg-promise');
-const pg = pgp();
+const dayjs = require('dayjs');
 const pick = require('lodash/pick');
+const pg = pgp();
 const DB = require('../db');
 
 exports.insertIntoTable = insertIntoTable;
@@ -28,9 +29,10 @@ async function updateTable(tableName, model, where, db = DB) {
   return db.tx(async t => {
     if (model.user_id) {
       model.mod_by_id = model.user_id;
+      model.mod_date = dayjs();
     }
 
-    let cleanModel = cleanData(tableName, model, t);
+    let cleanModel = await cleanData(tableName, model, t);
     let update = pg.helpers.update(cleanModel, null, tableName);
     let whereSql = objToWhereSql(where);
 
@@ -44,8 +46,8 @@ async function updateTable(tableName, model, where, db = DB) {
 exports.upsertTable = upsertTable;
 async function upsertTable(tableName, model, where = {}, db = DB) {
   return db.tx(async t => {
-    let isNewRecord = !recordExists(tableName, where, t)
-    if (!isNewRecord) {
+    let isNewRecord = !(await recordExists(tableName, where, t));
+    if (isNewRecord) {
       return await insertIntoTable(tableName, model, t);
     } else {
       return await updateTable(tableName,  model, where, t);
@@ -56,11 +58,12 @@ async function upsertTable(tableName, model, where = {}, db = DB) {
 async function recordExists(tableName, where, db = DB) {
   let whereSql = objToWhereSql(where);
   let primaryKey = tableName + '_id';
-  return await db.oneOrNone(/*sql*/`
+  let val = await db.oneOrNone(/*sql*/`
     SELECT $[primaryKey:name]
     FROM $[tableName:name]
     ${whereSql}
   `, { tableName, primaryKey });
+  return val ? !!val[primaryKey] : false;
 }
 
 exports.objToWhereSql = objToWhereSql;
@@ -70,7 +73,7 @@ function objToWhereSql(where) {
   if (whereKeys.length) {
     whereKeys.forEach((key, index) => {
       if (!index) whereClause += `WHERE ${key} = ${where[key]}`;
-      else whereClause += `, AND ${key} = ${where[key]}`;
+      else whereClause += ` AND ${key} = ${where[key]}`;
     });
   }
   return whereClause;

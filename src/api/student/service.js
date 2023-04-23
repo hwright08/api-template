@@ -7,10 +7,12 @@ const source = require('./source');
 const ratingService = require('../rating/service');
 
 exports.getStudents = source.getStudents;
+exports.getStudent = source.getStudent;
 
 exports.insertNewStudent = insertNewStudent;
 async function insertNewStudent(data, db = DB) {
   return db.tx(async t => {
+    data.user_id = data.instructor_id;
     let studentFields = ['instructor_id', 'student_name', 'user_id'];
     let studentModel = pick(data, studentFields);
     let student_id = await source.insertStudent(studentModel, t);
