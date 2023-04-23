@@ -16,3 +16,23 @@ async function getRatings(db = DB) {
     `);
   });
 }
+
+
+exports.ratingIsComplete = ratingIsComplete;
+async function ratingIsComplete(lesson_id, student_id, db = DB) {
+  return await db.one(/*sql*/`
+    SELECT
+      COUNT(*) > 0 AS incomplete,
+      l.rating_id
+    FROM lesson l
+    LEFT JOIN student_lesson_map slm
+      ON slm.lesson_id = l.lesson_id
+      AND slm.student_id = $[student_id]
+    WHERE slm.is_complete IS NULL AND l.rating_id IN (
+      SELECT rating_id
+      FROM lesson
+      WHERE lesson_id = $[lesson_id]
+    )
+    GROUP BY l.rating_id
+  `, { lesson_id, student_id });
+}

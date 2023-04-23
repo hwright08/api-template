@@ -2,6 +2,8 @@ const curry = require('lodash/curry');
 const { upsertTable } = require('../../db-helpers');
 const DB = require('../../../db');
 
+exports.upsertStudentLesson = curry(upsertTable)('student_lesson_map');
+
 exports.getLessons = getLessons;
 async function getLessons(student_id, rating_id, db = DB) {
   return db.any(/*sql*/`
@@ -27,6 +29,3 @@ async function getLessons(student_id, rating_id, db = DB) {
     ORDER BY l.stage_number, l.lesson_number
   `, { student_id, rating_id });
 }
-
-
-exports.upsertStudentLesson = curry(upsertTable)('student_lesson_map');

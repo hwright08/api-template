@@ -8,6 +8,7 @@ const ratingService = require('../rating/service');
 
 exports.getStudents = source.getStudents;
 exports.getStudent = source.getStudent;
+exports.updateStudent = source.updateStudent;
 
 exports.insertNewStudent = insertNewStudent;
 async function insertNewStudent(data, db = DB) {

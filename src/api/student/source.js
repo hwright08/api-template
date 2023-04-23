@@ -1,8 +1,9 @@
 const curry = require('lodash/curry');
-const { insertIntoTable } = require('../../db-helpers');
+const { insertIntoTable, updateTable } = require('../../db-helpers');
 const DB = require('../../../db');
 
 exports.insertStudent = curry(insertIntoTable)('student');
+exports.updateStudent = curry(updateTable)('student');
 
 exports.getStudents = getStudents;
 async function getStudents(instructor_id, db = DB) {
