@@ -4,7 +4,7 @@ const path = require('path');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  res.json({ apiName: 'api-template' });
+  res.json({ apiName: 'student-tracker-api' });
 });
 
 const apiPath = path.resolve(__dirname, 'api');

@@ -5,15 +5,26 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const router = require('./router');
-
 const app = express();
 
-app.options('*', cors());
+const corsOptions = {
+  origin: 'http://localhost:3000/',
+};
+// app.options('*', cors(corsOptions));
+app.use(cors());
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// app.use(function (req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 
 app.use('/api', router);
 
